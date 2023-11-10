@@ -1,0 +1,77 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: homelab-images-push
+  annotations:
+    pipelinesascode.tekton.dev/on-event: "[push]"
+    pipelinesascode.tekton.dev/on-target-branch: "[main]"
+    pipelinesascode.tekton.dev/task: "git-clone"
+    pipelinesascode.tekton.dev/task-1: "buildah"
+
+    # How many runs we want to keep.
+    pipelinesascode.tekton.dev/max-keep-runs: "5"
+spec:
+  params:
+    - name: repo_url
+      value: "{{ repo_url }}"
+    - name: revision
+      value: "{{ revision }}"
+    - name: build_context
+      value: plex
+      filter: |
+        "plex/*".pathChanged()
+  pipelineSpec:
+    params:
+      - name: repo_url
+      - name: revision
+      - name: build_context
+        default: ""
+    workspaces:
+      - name: source
+      - name: basic-auth
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+          kind: ClusterTask
+        workspaces:
+          - name: output
+            workspace: source
+          - name: basic-auth
+            workspace: basic-auth
+        params:
+          - name: url
+            value: $(params.repo_url)
+          - name: revision
+            value: $(params.revision)
+      - name: build-image
+        runAfter:
+          - fetch-repository
+        when:
+          - cel: $(params.build_context) != ""
+        workspaces:
+          - name: source
+            workspace: source
+        taskRef:
+          name: buildah
+        params:
+          - name: CONTEXT
+            value: $(params.build_context)
+          - name: DOCKERFILE
+            value: "$(params.build_context)/Dockerfile"
+          - name: SKIP_PUSH
+            value: "true"
+
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: basic-auth
+      secret:
+        secretName: "{{ git_auth_secret }}"
