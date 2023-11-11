@@ -1,4 +1,4 @@
-FROM ubi8/ubi:latest
+FROM registry.access.redhat.com/ubi8/ubi:latest
 
 ENV \
   TERM="xterm" \
