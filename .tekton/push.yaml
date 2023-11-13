@@ -57,7 +57,7 @@ spec:
           - name: DOCKERFILE
             value: "$(params.build_context)/Dockerfile"
           - name: IMAGE
-            value: "homelab.nexus.svc:80/homelab/$(params.build_context)"
+            value: "http://homelab.nexus.svc:80/homelab/$(params.build_context)"
 
   workspaces:
     - name: source
