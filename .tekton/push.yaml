@@ -19,7 +19,8 @@ spec:
       value: plex
       filter: '"plex/*".pathChanged()'
     - name: build_context
-      value: ""
+      value: nzbget
+      filter: '"nzbget/*".pathChanged()'
   pipelineSpec:
     params:
       - name: repo_url
