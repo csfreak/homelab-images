@@ -17,10 +17,7 @@ spec:
       value: "{{ revision }}"
     - name: build_context
       value: plex
-      filter: '"plex/*".pathChanged()'
-    - name: build_context
-      value: nzbget
-      filter: '"nzbget/*".pathChanged()'
+
   pipelineSpec:
     params:
       - name: repo_url
