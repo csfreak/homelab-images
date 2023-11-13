@@ -48,8 +48,6 @@ spec:
       - name: build-image
         runAfter:
           - fetch-repository
-        when:
-          - cel: $(params.build_context) != ""
         workspaces:
           - name: source
             workspace: source
