@@ -17,8 +17,7 @@ spec:
       value: "{{ revision }}"
     - name: build_context
       value: plex
-      filter: |
-        "plex/*".pathChanged()
+      filter: '"plex/*".pathChanged()'
     - name: build_context
       value: ""
   pipelineSpec:
