@@ -19,6 +19,8 @@ spec:
       value: plex
       filter: |
         "plex/*".pathChanged()
+    - name: build_context
+      value: ""
   pipelineSpec:
     params:
       - name: repo_url
@@ -58,7 +60,7 @@ spec:
           - name: DOCKERFILE
             value: "$(params.build_context)/Dockerfile"
           - name: IMAGE
-            value: "docker.homelab.csfreak.com/homelab/$(params.build_context)"
+            value: "homelab.nexus.svc:80/homelab/$(params.build_context)"
 
   workspaces:
     - name: source
