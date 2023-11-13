@@ -57,8 +57,6 @@ spec:
             value: $(params.build_context)
           - name: DOCKERFILE
             value: "$(params.build_context)/Dockerfile"
-          - name: SKIP_PUSH
-            value: "true"
           - name: IMAGE
             value: "docker.homelab.csfreak.com/homelab/$(params.build_context)"
 
