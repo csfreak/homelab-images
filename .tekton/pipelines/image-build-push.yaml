@@ -48,16 +48,3 @@ spec:
           value: "./images/$(params.image_name)/Dockerfile"
         - name: IMAGE
           value: "$(params.image_repo_url)/$(params.image_name)"
-
-workspaces:
-  - name: source
-    volumeClaimTemplate:
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Gi
-  - name: basic-auth
-    secret:
-      secretName: "{{ git_auth_secret }}"

@@ -20,3 +20,15 @@ spec:
       value: http://homelab.nexus.svc:80/homelab
   pipelineRef:
     name: image-build-push
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: basic-auth
+      secret:
+        secretName: "{{ git_auth_secret }}"
