@@ -17,7 +17,7 @@ spec:
     - name: image_name
       value: plex
     - name: image_repo_url
-      value: homelab.nexus.svc:80/homelab
+      value: homelab.nexus.svc/homelab
   pipelineRef:
     name: image-build-push
   workspaces:
