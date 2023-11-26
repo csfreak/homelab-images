@@ -47,4 +47,4 @@ spec:
         - name: DOCKERFILE
           value: "./images/$(params.image_name)/Dockerfile"
         - name: IMAGE
-          value: "$(params.image_repo_url)/$(params.image_name)"
+          value: "$(params.image_repo_url)/$(params.image_name):test"
