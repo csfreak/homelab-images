@@ -15,7 +15,8 @@ spec:
     - name: image_repo_url
       default: homelab.docker.homelab.csfreak.com/homelab
     - name: changes
-      default: ""
+      type: array
+      default: []
   workspaces:
     - name: source
     - name: basic-auth
@@ -26,7 +27,8 @@ spec:
           - name: image_name
             default: ""
           - name: changes
-            default: ""
+            default: []
+            type: array
         results:
           - name: image_name
         steps:
