@@ -2,6 +2,7 @@ FROM docker.homelab.csfreak.com/library/ubuntu:latest
 
 ENV SONARR_BRANCH="main"
 ARG SONARR_VERSION
+ARG SONARR_CHANNEL="v4-stable"
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV XDG_CONFIG_HOME="/config/xdg"
 
@@ -22,11 +23,11 @@ RUN \
     mkdir -p /app/sonarr/bin && \
     if [ -z ${SONARR_VERSION+x} ]; then \
     SONARR_VERSION=$(curl -sX GET http://services.sonarr.tv/v1/releases \
-    | jq -r ".[] | select(.branch==\"$SONARR_BRANCH\") | .version"); \
+    | jq -r ".[] | select(.releaseChannel==\"${SONARR_CHANNEL}\") | .version"); \
     fi && \
     curl -o \
     /tmp/sonarr.tar.gz -L \
-    "https://download.sonarr.tv/v3/${SONARR_BRANCH}/${SONARR_VERSION}/Sonarr.${SONARR_BRANCH}.${SONARR_VERSION}.linux.tar.gz" && \
+    "https://services.sonarr.tv/v1/update/${SONARR_BRANCH}/download?version=${SONARR_VERSION}&os=linuxmusl&runtime=netcore&arch=x64" && \
     tar xf \
     /tmp/sonarr.tar.gz -C \
     /app/sonarr/bin --strip-components=1 && \

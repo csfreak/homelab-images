@@ -42,6 +42,8 @@ spec:
         name: buildah
         kind: ClusterTask
       params:
+        - name: BUILD_EXTRA_ARGS
+          value: --build-arg-file=./images/$(params.image_name)/argfile.conf
         - name: CONTEXT
           value: ./images/$(params.image_name)
         - name: DOCKERFILE

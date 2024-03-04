@@ -2,10 +2,12 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: homelab-images-push
+  name: homelab-images-build
   annotations:
     pipelinesascode.tekton.dev/on-event: "[push]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      "images/*".pathChanged()
     # How many runs we want to keep.
     pipelinesascode.tekton.dev/max-keep-runs: "5"
 spec:
@@ -15,7 +17,7 @@ spec:
     - name: revision
       value: "{{ revision }}"
     - name: image_name
-      value: plex
+      value: "{{ files.all.exists(x, x.matches('images/')) }}"
     - name: image_repo_url
       value: homelab.docker.homelab.csfreak.com/homelab
   pipelineRef:

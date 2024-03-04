@@ -1,6 +1,6 @@
 FROM docker.homelab.csfreak.com/library/ubuntu:jammy
 
-ENV RADARR_BRANCH="master"
+ENV RADARR_BRANCH=${RADARR_BRANCH:-master}
 ARG RADARR_RELEASE
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV XDG_CONFIG_HOME="/config/xdg"
@@ -26,7 +26,7 @@ RUN \
     tar ixzf \
     /tmp/radarr.tar.gz -C \
     /app/radarr/bin --strip-components=1 && \
-    echo "UpdateMethod=docker\nBranch=${RADARR_BRANCH}\nPackageVersion=${VERSION}\nPackageAuthor=linuxserver.io" > /app/radarr/package_info && \
+    echo "UpdateMethod=docker\nBranch=${RADARR_BRANCH}\nPackageVersion=${RADARR_RELEASE}\nPackageAuthor=csfreak.com" > /app/radarr/package_info && \
     echo "**** cleanup ****" && \
     apt-get clean && \
     rm -rf \
@@ -44,4 +44,4 @@ VOLUME /downloads
 
 CMD ["/app/radarr/bin/Radarr", "-nobrowser", "-data=/config"]
 
-LABEL com.servarr.radarr.version=${RADARR_RELEASE}}
+LABEL com.servarr.radarr.version=${RADARR_RELEASE}
