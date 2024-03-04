@@ -21,7 +21,7 @@ spec:
     - name: image_repo_url
       value: homelab.docker.homelab.csfreak.com/homelab
     - name: changes
-      value: "{{ files.all }}"
+      value: "{{ body }}"
   pipelineRef:
     name: image-build-push
   workspaces:

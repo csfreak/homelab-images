@@ -27,8 +27,7 @@ spec:
           - name: image_name
             default: ""
           - name: changes
-            default: []
-            type: array
+            default: ""
         results:
           - name: image_name
         steps:
