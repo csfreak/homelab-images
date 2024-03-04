@@ -14,10 +14,41 @@ spec:
       default: ""
     - name: image_repo_url
       default: homelab.docker.homelab.csfreak.com/homelab
+    - name: changes
+      default: ""
   workspaces:
     - name: source
     - name: basic-auth
   tasks:
+    - name: set-image-name
+      taskSpec:
+        params:
+          - name: image_name
+            default: ""
+          - name: changes
+            default: ""
+        results:
+          - name: image_name
+        steps:
+          - name: parse
+            image: ubi9/ubi:latest
+            env:
+              - name: IMAGE_NAME
+                value: $(params.image_name)
+              - name: CHANGES
+                value: $(params.changes)
+            script: |
+              if [[ -z "${IMAGE_NAME}" ]]; then
+                echo "Parsing Changes: ${CHANGES}"
+              else
+                printf '%s' "${IMAGE_NAME}" | tee "$(results.image_name.path)"
+              fi
+      params:
+        - name: image_name
+          value: $(params.image_name)
+        - name: changes
+          value: $(params.changes)
+
     - name: fetch-repository
       taskRef:
         name: git-clone
@@ -43,10 +74,10 @@ spec:
         kind: ClusterTask
       params:
         - name: BUILD_EXTRA_ARGS
-          value: --build-arg-file=./images/$(params.image_name)/argfile.conf
+          value: --build-arg-file=./images/$(tasks.set-image-name.results.image_name)/argfile.conf
         - name: CONTEXT
-          value: ./images/$(params.image_name)
+          value: ./images/$(tasks.set-image-name.results.image_name)
         - name: DOCKERFILE
-          value: "./images/$(params.image_name)/Dockerfile"
+          value: "./images/$(tasks.set-image-name.results.image_name)/Dockerfile"
         - name: IMAGE
-          value: "$(params.image_repo_url)/$(params.image_name)"
+          value: "$(params.image_repo_url)/$(tasks.set-image-name.results.image_name)"

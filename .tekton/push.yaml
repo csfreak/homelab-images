@@ -17,9 +17,11 @@ spec:
     - name: revision
       value: "{{ revision }}"
     - name: image_name
-      value: "{{ files.all.exists(x, x.matches('images/')) }}"
+      value: ""
     - name: image_repo_url
       value: homelab.docker.homelab.csfreak.com/homelab
+    - name: changes
+      value: "{{ files }}"
   pipelineRef:
     name: image-build-push
   workspaces:
