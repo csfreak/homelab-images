@@ -58,10 +58,8 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-        matrix:
-          params:
-            - name: image_name
-              value: $(tasks.parse-changes.results.changes[*])
+          - name: image_name
+            value: $(tasks.parse-changes.results.changes[0])
         pipelineRef:
           name: image-build-push
         workspaces:
