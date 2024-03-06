@@ -51,11 +51,11 @@ spec:
         fi
 
 
-        DIFF=`git diff ${REVISION} ${REVISION^1} --name-only`
+        DIFF="$(git diff ${REVISION} ${REVISION^1} --name-only)"
 
-        PARSED=`echo ${DIFF}| $(params.parse_script)`
+        PARSED="$(echo ${DIFF}| $(params.parse_script))"
 
-        echo ${PARSED} | jq -ncR '[inputs]' | jq -Rsa '.' > $(results.array-results.path)
+        echo ${PARSED} | jq -ncR '[inputs]' | jq -Rsa '.' > $(results.changes.path)
 
       workingDir: $(workspaces.source.path)
   workspaces:
