@@ -44,7 +44,6 @@ spec:
       - name: parse-changes
         taskRef:
           name: git-parse-changes
-          kind: Task
         workspaces:
           - name: source
             workspace: source
