@@ -1,0 +1,63 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/categories: Git
+    tekton.dev/displayName: git parse last commit
+  name: git-parse-changes
+spec:
+  description: |-
+    This task can be used parse the files changed in the last commit
+  params:
+    - default: homelab.docker.homelab.csfreak.com/homelab/ubi-task
+      description: |
+        The base image for the task.
+      name: BASE_IMAGE
+      type: string
+    - default: "true"
+      description: Log the commands that are executed during `git-clone`'s operation.
+      name: VERBOSE
+      type: string
+    - default: "cat"
+      description: Commands to parse or filter changes
+      name: parse_script
+      type: string
+    - default: "head"
+      description: Revision to Diff
+      name: revision
+      type: string
+  results:
+    - description: The parsed changes from commit
+      name: changes
+      type: array
+  steps:
+    - env:
+        - name: PARAM_VERBOSE
+          value: $(params.VERBOSE)
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.output.path)
+        - name: REVISION
+          value: $(revision)
+      image: $(params.BASE_IMAGE)
+      name: git
+      resources: {}
+      script: |
+        #!/usr/bin/env sh
+        set -eu
+
+        if [ "${PARAM_VERBOSE}" = "true" ] ; then
+          set -x
+        fi
+
+
+        DIFF="$(git diff ${REVISION} ${REVISION^1} --name-only)"
+
+        PARSED="$(echo ${DIFF}| $(params.parse_script))"
+
+        echo ${PARSED} | jq -ncR '[inputs]' | jq -Rsa '.' > $(results.array-results.path)
+
+      workingDir: $(workspaces.source.path)
+  workspaces:
+    - description: A workspace that contains the fetched git repository.
+      name: source

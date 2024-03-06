@@ -16,14 +16,59 @@ spec:
       value: "{{ repo_url }}"
     - name: revision
       value: "{{ revision }}"
-    - name: image_name
-      value: ""
-    - name: image_repo_url
-      value: homelab.docker.homelab.csfreak.com/homelab
-    - name: changes
-      value: "{{ body }}"
-  pipelineRef:
-    name: image-build-push
+  pipelineSpec:
+    params:
+      - name: repo_url
+      - name: revision
+        default: main
+      - name: image_repo_url
+        default: homelab.docker.homelab.csfreak.com/homelab
+    workspaces:
+      - name: source
+      - name: basic-auth
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+          kind: ClusterTask
+        workspaces:
+          - name: output
+            workspace: source
+          - name: basic-auth
+            workspace: basic-auth
+        params:
+          - name: url
+            value: $(params.repo_url)
+          - name: revision
+            value: $(params.revision)
+      - name: parse-changes
+        taskRef:
+          name: git-parse-changes
+          kind: Task
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: revision
+            value: $(params.revision)
+      - name: build-image
+        params:
+          - name: repo_url
+            value: $(params.repo_url)
+          - name: revision
+            value: $(params.revision)
+        matrix:
+          params:
+            - name: image_name
+              value: $(tasks.parse-changes.results.changes[*])
+        pipelineRef:
+          name: image-build-push
+        workspaces:
+          - name: source
+            workspace: source
+          - name: basic-auth
+            workspace: basic-auth
+
   workspaces:
     - name: source
       volumeClaimTemplate:
@@ -36,3 +81,7 @@ spec:
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
+  results:
+    - name: parsed-images
+      type: array
+      value: $(steps.parse-changes.result.images[*])
