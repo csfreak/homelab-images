@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: homelab-images-build
+  generateName: homelab-images-build-
   annotations:
     pipelinesascode.tekton.dev/on-event: "[push]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
@@ -42,6 +42,8 @@ spec:
           - name: revision
             value: $(params.revision)
       - name: parse-changes
+        runAfter:
+          - fetch-repository
         taskRef:
           name: git-parse-changes
         workspaces:
@@ -51,23 +53,25 @@ spec:
           - name: revision
             value: $(params.revision)
           - name: parse_script
-            value: "sed -n 's|^/images/([a-zA-Z0-9-]*)/.*|\\1|p'"
+            value: "sed -n 's|^images/\\([a-zA-Z0-9-]*\\)/.*|\\1|p'"
+
       - name: build-image
-        params:
-          - name: repo_url
-            value: $(params.repo_url)
-          - name: revision
-            value: $(params.revision)
-          - name: image_name
-            value: $(tasks.parse-changes.results.changes[0])
-        pipelineRef:
-          name: image-build-push
         workspaces:
           - name: source
             workspace: source
-          - name: basic-auth
-            workspace: basic-auth
-
+        taskRef:
+          name: buildah-image-build
+        params:
+          - name: IMAGE_REPO
+            value: $(params.image_repo_url)
+        matrix:
+          params:
+            - name: IMAGE_NAME
+              value: $(tasks.parse-changes.results.changes[*])
+    results:
+      - name: parsed-images
+        type: array
+        value: $(tasks.parse-changes.results.changes[*])
   workspaces:
     - name: source
       volumeClaimTemplate:
@@ -80,7 +84,3 @@ spec:
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
-  results:
-    - name: parsed-images
-      type: array
-      value: $(steps.parse-changes.result.images[*])
