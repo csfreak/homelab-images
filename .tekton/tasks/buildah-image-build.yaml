@@ -74,9 +74,9 @@ spec:
       script: |
         [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
 
-        BUILD_ARGS = "$(params.BUILD_EXTRA_ARGS)"
+        BUILD_ARGS="$(params.BUILD_EXTRA_ARGS)"
         if [ -f "argfile.conf" ]; then
-          BUILD_ARGS = "${BUILD_ARGS} --build-arg-file=./argfile.conf"
+          BUILD_ARGS="${BUILD_ARGS} --build-arg-file=./argfile.conf"
         fi
 
         IMAGE="$(params.IMAGE_REPO)/$(params.IMAGE_NAME):$(params.IMAGE_TAG)""
