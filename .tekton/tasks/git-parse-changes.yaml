@@ -50,6 +50,9 @@ spec:
           set -x
         fi
 
+        git config --global --add safe.directory $(workspaces.source.path)
+        git fetch --deepen=1
+
 
         git diff ${REVISION} ${REVISION}^1 --name-only |\
         $(params.parse_script) |\
