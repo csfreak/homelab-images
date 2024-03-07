@@ -56,8 +56,7 @@ spec:
 
         git diff ${REVISION} ${REVISION}^1 --name-only |\
         $(params.parse_script) |\
-        jq -ncRj '[inputs]' |\
-        jq -Rja '.' > $(results.changes.path)
+        jq -ncRj '[inputs]' > $(results.changes.path)
 
       workingDir: $(workspaces.source.path)
   workspaces:
