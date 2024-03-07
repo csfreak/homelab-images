@@ -79,7 +79,7 @@ spec:
           BUILD_ARGS="${BUILD_ARGS} --build-arg-file=./argfile.conf"
         fi
 
-        IMAGE="$(params.IMAGE_REPO)/$(params.IMAGE_NAME):$(params.IMAGE_TAG)""
+        IMAGE="$(params.IMAGE_REPO)/$(params.IMAGE_NAME):$(params.IMAGE_TAG)"
 
         buildah "--storage-driver=$(params.STORAGE_DRIVER)" bud ${BUILD_ARGS} \
           "--format=$(params.FORMAT)" "--tls-verify=$(params.TLSVERIFY)" \
