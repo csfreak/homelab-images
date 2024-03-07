@@ -31,7 +31,7 @@ spec:
       default: registry.redhat.io/rhel8/buildah
     - name: STORAGE_DRIVER
       description: Set buildah storage driver
-      default: overlay
+      default: vfs
     - name: DOCKERFILE
       description: Path to the Dockerfile to build.
       default: ./Dockerfile
@@ -56,8 +56,6 @@ spec:
       default: "false"
   workspaces:
     - name: source
-    - name: sslcertdir
-      optional: true
     - name: dockerconfig
       description: >-
         An optional workspace that allows providing a .docker/config.json file
@@ -74,10 +72,7 @@ spec:
       image: $(params.BUILDER_IMAGE)
       workingDir: $(workspaces.source.path)/images/$(params.IMAGE_NAME)
       script: |
-        [ "$(workspaces.sslcertdir.bound)" = "true" ] && CERT_DIR_FLAG="--cert-dir=$(workspaces.sslcertdir.path)"
         [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
-        # build the image (CERT_DIR_FLAG should be omitted if empty and BUILD_EXTRA_ARGS can contain multiple args)
-        # shellcheck disable=SC2046,SC2086
 
         BUILD_ARGS = "$(params.BUILD_EXTRA_ARGS)"
         if [ -f "argfile.conf" ]; then
@@ -86,13 +81,15 @@ spec:
 
         IMAGE="$(params.IMAGE_REPO)/$(params.IMAGE_NAME):$(params.IMAGE_TAG)""
 
-        buildah ${CERT_DIR_FLAG} "--storage-driver=$(params.STORAGE_DRIVER)" bud ${BUILD_ARGS} \
+        buildah "--storage-driver=$(params.STORAGE_DRIVER)" bud ${BUILD_ARGS} \
           "--format=$(params.FORMAT)" "--tls-verify=$(params.TLSVERIFY)" \
           -f "$(params.DOCKERFILE)" -t "${IMAGE}" "$(params.CONTEXT)"
+
         [ "$(params.SKIP_PUSH)" = "true" ] && echo "Push skipped" && exit 0
-        # push the image (CERT_DIR_FLAG should be omitted if empty and PUSH_EXTRA_ARGS can contain multiple args)
-        # shellcheck disable=SC2046,SC2086
-        buildah ${CERT_DIR_FLAG} "--storage-driver=$(params.STORAGE_DRIVER)" push $(params.PUSH_EXTRA_ARGS) \
+
+
+
+        buildah "--storage-driver=$(params.STORAGE_DRIVER)" push $(params.PUSH_EXTRA_ARGS) \
           "--tls-verify=$(params.TLSVERIFY)" --digestfile /tmp/image-digest "{IMAGE}" \
           "docker://{IMAGE}"
         tee "$(results.IMAGE_DIGEST.path)" < /tmp/image-digest
@@ -101,7 +98,9 @@ spec:
         - name: varlibcontainers
           mountPath: /var/lib/containers
       securityContext:
-        privileged: true
+        capabilities:
+          add:
+            - SETFCAP
   volumes:
     - name: varlibcontainers
       emptyDir: {}
