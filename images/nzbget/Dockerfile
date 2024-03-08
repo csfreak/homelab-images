@@ -3,7 +3,6 @@ FROM ghcr.io/nzbgetcom/nzbget:${NZBGET_VERSION}
 
 COPY --chown=0:0 --chmod=555 entrypoint.sh /
 
-
 ENV NZBGET_CONFIG_OutputMode=log \
     NZBGET_CONFIG_WriteLog=none \
     NZBGET_CONFIG_ConfigTemplate=/nzbget/webui/nzbget.conf.template \

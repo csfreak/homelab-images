@@ -74,6 +74,10 @@ spec:
       image: $(params.BUILDER_IMAGE)
       workingDir: $(workspaces.source.path)/images/$(params.IMAGE_NAME)
       script: |
+        if [ "$(params.VERBOSE)" = "true" ]; then
+          set -x
+        fi
+
         [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
 
         BUILD_ARGS="$(params.BUILD_EXTRA_ARGS)"
