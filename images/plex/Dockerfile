@@ -1,4 +1,6 @@
-FROM registry.access.redhat.com/ubi8/ubi:latest
+ARG BASE_IMAGE
+ARG BASE_IMAGE_VERSION
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
 
 ENV \
   TERM="xterm" \
@@ -10,7 +12,6 @@ ENV \
   PLEX_MEDIA_SERVER_INFO_VENDOR="Red Hat Enterprise Linux" \
   PLEX_MEDIA_SERVER_INFO_DEVICE="Openshift Container Platform 4" \
   PLEX_MEDIA_SERVER_INFO_MODEL=Container \
-  PLEX_MEDIA_SERVER_INFO_PLATFORM_VERSION=ubi8
 
 
 COPY plex.repo /etc/yum.repos.d/
