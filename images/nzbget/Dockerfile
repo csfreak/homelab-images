@@ -1,3 +1,4 @@
+ARG NZBGET_VERSION
 FROM ghcr.io/nzbgetcom/nzbget:${NZBGET_VERSION}
 
 COPY --chown=0:0 --chmod=555 entrypoint.sh /
