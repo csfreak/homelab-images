@@ -1,4 +1,6 @@
-FROM docker.homelab.csfreak.com/library/ubuntu:latest
+ARG BASE_IMAGE
+ARG BASE_IMAGE_VERSION
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
 
 ENV SONARR_BRANCH="main"
 ARG SONARR_VERSION
