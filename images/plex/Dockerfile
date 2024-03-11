@@ -15,7 +15,7 @@ ENV \
   PLEX_MEDIA_SERVER_HOME="/usr/lib/plexmediaserver" \
   PLEX_MEDIA_SERVER_INFO_VENDOR="Red Hat Enterprise Linux" \
   PLEX_MEDIA_SERVER_INFO_DEVICE="Openshift Container Platform 4" \
-  PLEX_MEDIA_SERVER_INFO_MODEL=Container
+  PLEX_MEDIA_SERVER_INFO_MODEL=Container \
   PLEX_MEDIA_SERVER_VERSION=${PLEX_VERSION}
 
 
